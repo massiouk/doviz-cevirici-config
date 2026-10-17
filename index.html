@@ -2,44 +2,267 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Converto Calculate – Destek</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Converto Calculate</title>
+<meta name="description" content="Canlı kurlarla döviz çevirici ve hesap makinesi tek uygulamada. iOS ve Android için indirin.">
+<meta property="og:title" content="Converto Calculate">
+<meta property="og:description" content="Live-rate currency converter and calculator in one app. Download for iOS and Android.">
+<meta property="og:image" content="img/og.png">
+<meta name="theme-color" content="#1c1c1e">
+<link rel="icon" href="img/favicon.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <style>
-  :root { color-scheme: light dark; --fg: #1c1c1e; --muted: #6e6e73; --bg: #ffffff; --accent: #0d8c73; }
-  @media (prefers-color-scheme: dark) { :root { --fg: #f2f2f7; --muted: #a1a1a6; --bg: #000000; --accent: #33c7a3; } }
-  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-  main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
-  h1 { font-size: 28px; margin: 0 0 4px; }
-  h2 { font-size: 20px; margin: 32px 0 8px; }
-  .muted { color: var(--muted); }
+  :root {
+    color-scheme: dark light;
+    --bg: #141416; --bg2: #1c1c1f; --card: #232327; --line: #313136;
+    --fg: #f5f5f7; --muted: #a1a1a8; --accent: #ff9500; --accent2: #ffaf3c; --on-accent: #1a1100;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #f5f5f7; --bg2: #ffffff; --card: #ffffff; --line: #e3e3e8; --fg: #1c1c1e; --muted: #6e6e73; }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
   a { color: var(--accent); }
-  dt { font-weight: 600; margin-top: 12px; }
-  dd { margin: 0; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
+
+  header { position: sticky; top: 0; z-index: 5; backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px);
+           background: color-mix(in srgb, var(--bg) 78%, transparent); border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; align-items: center; gap: 10px; height: 56px; }
+  header img { width: 30px; height: 30px; border-radius: 7px; }
+  header strong { font-size: 16px; letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  @media (max-width: 420px) { header strong { display: none; } }
+  .langs { margin-left: auto; display: flex; gap: 2px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+  .langs button { border: 0; background: transparent; color: var(--muted); font: 600 12px/1 inherit; padding: 7px 10px; border-radius: 999px; cursor: pointer; }
+  .langs button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+  .hero { text-align: center; padding: 56px 0 28px; }
+  .hero .icon { width: 128px; height: 128px; border-radius: 29px; box-shadow: 0 18px 50px rgba(0,0,0,.35); }
+  .hero .name { margin: 18px 0 0; font-size: 17px; font-weight: 600; color: var(--accent); letter-spacing: 0.01em; }
+  .hero h1 { font-size: clamp(32px, 6vw, 52px); line-height: 1.08; letter-spacing: -0.03em; margin: 6px 0 10px; }
+  .hero p.lead { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 640px; margin: 0 auto; }
+  .stores { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 30px 0 10px; }
+  .store { display: flex; align-items: center; gap: 12px; min-width: 210px; padding: 12px 20px; border-radius: 14px; text-decoration: none;
+           background: var(--card); color: var(--fg); border: 1px solid var(--line); transition: transform .15s ease; }
+  .store:hover { transform: translateY(-2px); }
+  .store.primary { background: linear-gradient(180deg, var(--accent2), var(--accent)); color: var(--on-accent); border-color: transparent; }
+  .store svg { width: 26px; height: 26px; flex: none; }
+  .store span { display: flex; flex-direction: column; text-align: left; line-height: 1.15; }
+  .store small { font-size: 12px; opacity: .8; }
+  .store b { font-size: 19px; letter-spacing: -0.01em; }
+  .store[aria-disabled="true"] { opacity: .55; pointer-events: none; }
+  .note { color: var(--muted); font-size: 14px; }
+
+  .shots { display: flex; gap: 18px; justify-content: center; padding: 34px 0 10px; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .shots img { width: 240px; height: auto; flex: none; border-radius: 30px; border: 1px solid var(--line); scroll-snap-align: center; background: var(--card); }
+  @media (max-width: 760px) { .shots { justify-content: flex-start; margin: 0 -16px; padding-left: 16px; padding-right: 16px; } .shots img { width: 64vw; max-width: 260px; } }
+
+  section { padding: 44px 0; }
+  h2 { font-size: clamp(24px, 3.6vw, 32px); letter-spacing: -0.02em; margin: 0 0 18px; text-align: center; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 20px; }
+  .card .badge { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; font-weight: 700;
+                 background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); margin-bottom: 12px; }
+  .card h3 { margin: 0 0 6px; font-size: 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+  .support { max-width: 720px; margin: 0 auto; }
+  .support dl { margin: 0; }
+  .support dt { font-weight: 600; margin-top: 16px; }
+  .support dd { margin: 4px 0 0; color: var(--muted); }
+  .mail { text-align: center; font-size: 18px; margin: 0 0 8px; }
+
+  footer { border-top: 1px solid var(--line); padding: 26px 0 40px; color: var(--muted); font-size: 14px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 18px; justify-content: space-between; }
 </style>
 </head>
 <body>
-<main>
-<h1>Converto Calculate</h1>
-<p class="muted">MassIO Limited</p>
-<p>Canlı kurlarla birden fazla para birimini aynı anda çevirin. · Convert several currencies at once with live rates.</p>
+<header>
+  <div class="wrap">
+    <img src="img/icon.png" alt="">
+    <strong>Converto Calculate</strong>
+    <nav class="langs" aria-label="Language">
+      <button data-lang="tr">TR</button><button data-lang="en">EN</button><button data-lang="de">DE</button><button data-lang="fr">FR</button>
+    </nav>
+  </div>
+</header>
 
-<h2>Destek · Support</h2>
-<p>Soru, öneri ya da hata bildirimi için / For questions, feedback or bug reports:<br>
-<a href="mailto:support@massio.uk">support@massio.uk</a></p>
+<main class="wrap">
+  <div class="hero">
+    <img class="icon" src="img/icon.png" alt="">
+    <p class="name">Converto Calculate</p>
+    <h1 data-i18n="title">Döviz çevirici ve hesap makinesi, tek uygulamada</h1>
+    <p class="lead" data-i18n="lead">Hesabınızı yapın, sonucu tek dokunuşla tüm para birimlerinde görün. Canlı kurlar, 150'den fazla para birimi.</p>
+    <div class="stores" id="stores">
+      <a class="store" id="ios" href="#" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10.5 18.5h3"/></svg>
+        <span><small data-i18n="iosSmall">iPhone ve iPad için</small><b>App Store</b></span>
+      </a>
+      <a class="store" id="android" href="#" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5v15l13-7.5z"/></svg>
+        <span><small data-i18n="androidSmall">Android için</small><b>Google Play</b></span>
+      </a>
+    </div>
+    <p class="note" data-i18n="note">Ücretsiz indirin · Premium isteğe bağlı</p>
+  </div>
 
-<h2>Sık sorulan sorular · FAQ</h2>
-<dl>
-  <dt>Kurlar ne sıklıkla güncelleniyor? · How often are rates updated?</dt>
-  <dd>Uygulama açıkken her dakika. Kaynak: Coinbase (yedek: ExchangeRate-API). · Every minute while the app is open. Source: Coinbase (backup: ExchangeRate-API).</dd>
-  <dt>Bankamın kurundan neden farklı? · Why does it differ from my bank's rate?</dt>
-  <dd>Gösterilen kurlar piyasa ortalamasıdır; bankalar alış-satış farkı ekler. Kurlar bilgi amaçlıdır. · Rates shown are mid-market rates; banks add a buy/sell spread. Rates are for information only.</dd>
-  <dt>İnternetsiz çalışır mı? · Does it work offline?</dt>
-  <dd>Evet, son alınan kurlarla. · Yes, using the most recently downloaded rates.</dd>
-  <dt>Dili nasıl değiştiririm? · How do I change the language?</dt>
-  <dd>Sol üstteki 🌐 düğmesinden. · Use the 🌐 button at the top left.</dd>
-</dl>
+  <div class="shots" aria-label="Screenshots">
+    <img data-shot="1-list" src="img/tr-1-list.jpg" width="540" height="1173" alt="">
+    <img data-shot="2-calc" src="img/tr-2-calc.jpg" width="540" height="1173" alt="">
+    <img data-shot="3-picker" src="img/tr-3-picker.jpg" width="540" height="1173" alt="">
+  </div>
 
-<p><a href="privacy.html">Gizlilik Politikası · Privacy Policy · Datenschutz · Confidentialité</a></p>
+  <section>
+    <h2 data-i18n="featuresTitle">Neler yapabilirsiniz?</h2>
+    <div class="grid">
+      <div class="card"><div class="badge">⇄</div><h3 data-i18n="f1t">Döviz çevirici</h3><p data-i18n="f1p">Herhangi bir satıra yazın, listedeki tüm para birimleri anında hesaplansın. Kurlar her dakika yenilenir, internetsiz de çalışır.</p></div>
+      <div class="card"><div class="badge">±</div><h3 data-i18n="f2t">Hesap makinesi</h3><p data-i18n="f2p">Tanıdık, büyük tuşlar. Sonucu $€ tuşuyla ya da kaydırarak çeviriciye aktarın; tüm para birimlerindeki karşılığını görün.</p></div>
+      <div class="card"><div class="badge">↺</div><h3 data-i18n="f3t">Hesap geçmişi</h3><p data-i18n="f3p">Her işlem kaydedilir. Geçmişteki bir sayıya dokunun, yeni hesaba eklensin. Anlık sonuç siz yazarken görünür.</p></div>
+      <div class="card"><div class="badge">★</div><h3 data-i18n="f4t">Premium</h3><p data-i18n="f4p">Sınırsız para birimi, kur alarmları, renk temaları ve reklamsız kullanım.</p></div>
+    </div>
+  </section>
+
+  <section class="support" id="support">
+    <h2 data-i18n="supportTitle">Destek</h2>
+    <p class="mail"><span data-i18n="supportText">Soru, öneri ya da hata bildirimi için:</span><br><a href="mailto:support@massio.uk">support@massio.uk</a></p>
+    <dl>
+      <dt data-i18n="q1">Kurlar ne sıklıkla güncelleniyor?</dt>
+      <dd data-i18n="a1">Uygulama açıkken her dakika. Kaynak: Coinbase (yedek: ExchangeRate-API).</dd>
+      <dt data-i18n="q2">Bankamın kurundan neden farklı?</dt>
+      <dd data-i18n="a2">Gösterilen kurlar piyasa ortalamasıdır; bankalar alış-satış farkı ekler. Kurlar bilgi amaçlıdır.</dd>
+      <dt data-i18n="q3">İnternetsiz çalışır mı?</dt>
+      <dd data-i18n="a3">Evet, son alınan kurlarla.</dd>
+      <dt data-i18n="q4">Dili ve diğer ayarları nasıl değiştiririm?</dt>
+      <dd data-i18n="a4">Hesap makinesindeki dişli tuşuyla Ayarlar'ı açın.</dd>
+      <dt data-i18n="q5">Aboneliğimi nasıl iptal ederim?</dt>
+      <dd data-i18n="a5">iPhone'da Ayarlar › Apple Kimliği › Abonelikler; Android'de Google Play › Ödemeler ve abonelikler.</dd>
+    </dl>
+  </section>
 </main>
+
+<footer>
+  <div class="wrap">
+    <span>© <span id="year">2026</span> MassIO Limited</span>
+    <a href="privacy.html" data-i18n="privacy">Gizlilik Politikası</a>
+  </div>
+</footer>
+
+<script>
+// Mağaza bağlantıları: Android yayınlanınca `android` adresini yazın; boşken düğme "Yakında" gösterir.
+const STORE = {
+  ios: "https://apps.apple.com/app/id6823217926",
+  android: ""
+};
+
+const T = {
+  tr: {
+    title: "Döviz çevirici ve hesap makinesi, tek uygulamada",
+    lead: "Hesabınızı yapın, sonucu tek dokunuşla tüm para birimlerinde görün. Canlı kurlar, 150'den fazla para birimi.",
+    iosSmall: "iPhone ve iPad için", androidSmall: "Android için", soon: "Yakında",
+    note: "Ücretsiz indirin · Premium isteğe bağlı",
+    featuresTitle: "Neler yapabilirsiniz?",
+    f1t: "Döviz çevirici", f1p: "Herhangi bir satıra yazın, listedeki tüm para birimleri anında hesaplansın. Kurlar her dakika yenilenir, internetsiz de çalışır.",
+    f2t: "Hesap makinesi", f2p: "Tanıdık, büyük tuşlar. Sonucu $€ tuşuyla ya da kaydırarak çeviriciye aktarın; tüm para birimlerindeki karşılığını görün.",
+    f3t: "Hesap geçmişi", f3p: "Her işlem kaydedilir. Geçmişteki bir sayıya dokunun, yeni hesaba eklensin. Anlık sonuç siz yazarken görünür.",
+    f4t: "Premium", f4p: "Sınırsız para birimi, kur alarmları, renk temaları ve reklamsız kullanım.",
+    supportTitle: "Destek", supportText: "Soru, öneri ya da hata bildirimi için:",
+    q1: "Kurlar ne sıklıkla güncelleniyor?", a1: "Uygulama açıkken her dakika. Kaynak: Coinbase (yedek: ExchangeRate-API).",
+    q2: "Bankamın kurundan neden farklı?", a2: "Gösterilen kurlar piyasa ortalamasıdır; bankalar alış-satış farkı ekler. Kurlar bilgi amaçlıdır.",
+    q3: "İnternetsiz çalışır mı?", a3: "Evet, son alınan kurlarla.",
+    q4: "Dili ve diğer ayarları nasıl değiştiririm?", a4: "Hesap makinesindeki dişli tuşuyla Ayarlar'ı açın.",
+    q5: "Aboneliğimi nasıl iptal ederim?", a5: "iPhone'da Ayarlar › Apple Kimliği › Abonelikler; Android'de Google Play › Ödemeler ve abonelikler.",
+    privacy: "Gizlilik Politikası"
+  },
+  en: {
+    title: "Currency converter and calculator, in one app",
+    lead: "Do the math, then see the result in every currency with one tap. Live rates, 150+ currencies.",
+    iosSmall: "For iPhone and iPad", androidSmall: "For Android", soon: "Coming soon",
+    note: "Free to download · Premium optional",
+    featuresTitle: "What you can do",
+    f1t: "Currency converter", f1p: "Type in any row and every currency in your list updates instantly. Rates refresh every minute and work offline too.",
+    f2t: "Calculator", f2p: "Familiar, large keys. Send the result to the converter with the $€ key or a swipe and see it in every currency.",
+    f3t: "Calculation history", f3p: "Every calculation is saved. Tap a number in your history to reuse it. The live result shows as you type.",
+    f4t: "Premium", f4p: "Unlimited currencies, rate alerts, colour themes and no ads.",
+    supportTitle: "Support", supportText: "For questions, feedback or bug reports:",
+    q1: "How often are rates updated?", a1: "Every minute while the app is open. Source: Coinbase (backup: ExchangeRate-API).",
+    q2: "Why does it differ from my bank's rate?", a2: "Rates shown are mid-market rates; banks add a buy/sell spread. Rates are for information only.",
+    q3: "Does it work offline?", a3: "Yes, using the most recently downloaded rates.",
+    q4: "How do I change the language and other settings?", a4: "Open Settings with the gear key on the calculator.",
+    q5: "How do I cancel my subscription?", a5: "On iPhone: Settings › Apple Account › Subscriptions. On Android: Google Play › Payments & subscriptions.",
+    privacy: "Privacy Policy"
+  },
+  de: {
+    title: "Währungsrechner und Taschenrechner in einer App",
+    lead: "Rechnen und das Ergebnis mit einem Tippen in allen Währungen sehen. Live-Kurse, über 150 Währungen.",
+    iosSmall: "Für iPhone und iPad", androidSmall: "Für Android", soon: "Demnächst",
+    note: "Kostenlos laden · Premium optional",
+    featuresTitle: "Das kann die App",
+    f1t: "Währungsrechner", f1p: "In eine beliebige Zeile tippen – alle Währungen der Liste werden sofort umgerechnet. Kurse jede Minute aktuell, auch offline.",
+    f2t: "Taschenrechner", f2p: "Vertraute, große Tasten. Ergebnis per $€-Taste oder Wischen an den Währungsrechner übergeben und in allen Währungen sehen.",
+    f3t: "Rechenverlauf", f3p: "Jede Rechnung wird gespeichert. Tippe auf eine Zahl im Verlauf, um sie wiederzuverwenden. Das Ergebnis erscheint schon beim Tippen.",
+    f4t: "Premium", f4p: "Unbegrenzt viele Währungen, Kursalarme, Farbthemen und keine Werbung.",
+    supportTitle: "Support", supportText: "Für Fragen, Feedback oder Fehlermeldungen:",
+    q1: "Wie oft werden die Kurse aktualisiert?", a1: "Jede Minute, solange die App geöffnet ist. Quelle: Coinbase (Ersatz: ExchangeRate-API).",
+    q2: "Warum weicht der Kurs von meiner Bank ab?", a2: "Angezeigt werden Mittelkurse; Banken schlagen eine An-/Verkaufsspanne auf. Nur zur Information.",
+    q3: "Funktioniert die App offline?", a3: "Ja, mit den zuletzt geladenen Kursen.",
+    q4: "Wie ändere ich Sprache und Einstellungen?", a4: "Öffne die Einstellungen mit der Zahnrad-Taste im Taschenrechner.",
+    q5: "Wie kündige ich mein Abo?", a5: "iPhone: Einstellungen › Apple Account › Abonnements. Android: Google Play › Zahlungen & Abos.",
+    privacy: "Datenschutz"
+  },
+  fr: {
+    title: "Convertisseur de devises et calculatrice, dans une seule app",
+    lead: "Faites le calcul, puis voyez le résultat dans toutes les devises d’un seul geste. Taux en direct, plus de 150 devises.",
+    iosSmall: "Pour iPhone et iPad", androidSmall: "Pour Android", soon: "Bientôt",
+    note: "Téléchargement gratuit · Premium en option",
+    featuresTitle: "Ce que vous pouvez faire",
+    f1t: "Convertisseur de devises", f1p: "Saisissez un montant sur n’importe quelle ligne : toutes les devises se mettent à jour. Taux actualisés chaque minute, même hors ligne.",
+    f2t: "Calculatrice", f2p: "De grandes touches familières. Envoyez le résultat au convertisseur avec la touche $€ ou d’un glissement.",
+    f3t: "Historique des calculs", f3p: "Chaque calcul est enregistré. Touchez un nombre de l’historique pour le réutiliser. Le résultat s’affiche pendant la saisie.",
+    f4t: "Premium", f4p: "Devises illimitées, alertes de taux, thèmes de couleur et sans publicité.",
+    supportTitle: "Assistance", supportText: "Pour toute question, suggestion ou signalement de bug :",
+    q1: "À quelle fréquence les taux sont-ils actualisés ?", a1: "Chaque minute lorsque l’app est ouverte. Source : Coinbase (secours : ExchangeRate-API).",
+    q2: "Pourquoi le taux diffère-t-il de celui de ma banque ?", a2: "Ce sont des taux moyens du marché ; les banques ajoutent une marge. À titre indicatif.",
+    q3: "L’app fonctionne-t-elle hors ligne ?", a3: "Oui, avec les derniers taux téléchargés.",
+    q4: "Comment changer la langue et les réglages ?", a4: "Ouvrez les Réglages avec la touche engrenage de la calculatrice.",
+    q5: "Comment annuler mon abonnement ?", a5: "iPhone : Réglages › Compte Apple › Abonnements. Android : Google Play › Paiements et abonnements.",
+    privacy: "Confidentialité"
+  }
+};
+
+function pickLang() {
+  const q = new URLSearchParams(location.search).get("lang");
+  if (q && T[q]) return q;
+  try { const s = localStorage.getItem("lang"); if (s && T[s]) return s; } catch (e) {}
+  const nav = (navigator.languages || [navigator.language || "en"]).map(l => l.slice(0, 2).toLowerCase());
+  return nav.find(l => T[l]) || "en";
+}
+
+function apply(lang) {
+  const t = T[lang];
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => { const k = el.dataset.i18n; if (t[k]) el.textContent = t[k]; });
+  document.querySelectorAll("[data-shot]").forEach(img => { img.src = `img/${lang}-${img.dataset.shot}.jpg`; });
+  document.querySelectorAll(".langs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+  const android = document.getElementById("android");
+  if (!STORE.android) android.querySelector("small").textContent = t.soon;
+}
+
+// Bağlantılar ve ziyaretçinin cihazına göre öne çıkan düğme.
+const ios = document.getElementById("ios"), android = document.getElementById("android");
+ios.href = STORE.ios;
+if (STORE.android) android.href = STORE.android; else { android.removeAttribute("href"); android.setAttribute("aria-disabled", "true"); }
+const ua = navigator.userAgent;
+const isAndroid = /android/i.test(ua);
+if (isAndroid && STORE.android) { android.classList.add("primary"); document.getElementById("stores").prepend(android); }
+else ios.classList.add("primary");
+
+let lang = pickLang();
+apply(lang);
+document.querySelectorAll(".langs button").forEach(b => b.addEventListener("click", () => {
+  lang = b.dataset.lang; apply(lang);
+  try { localStorage.setItem("lang", lang); } catch (e) {}
+}));
+document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
