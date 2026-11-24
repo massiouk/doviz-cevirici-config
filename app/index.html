@@ -19,12 +19,14 @@
 <style>body{font:16px -apple-system,system-ui,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0;background:#fafafa;color:#111}a{color:#f08a00}</style>
 <script>
 // Store links.
-var STORE = { ios: "https://apps.apple.com/app/id6823217926", android: "https://play.google.com/store/apps/details?id=com.massio.converto" };
-// iPhone/iPad go straight to the App Store. Computers go to the home page instead: on a Mac the
-// App Store link opens the Mac App Store, which shows "An error occurred" for this iPhone/iPad app.
+var STORE = { ios: "https://apps.apple.com/app/id6823217926", mac: "https://apps.apple.com/app/id6823217926?platform=mac", android: "https://play.google.com/store/apps/details?id=com.massio.converto" };
+// iPhone/iPad go to the App Store, Macs to the Mac App Store, Android to Google Play; other
+// computers go to the home page. iPadOS also reports "Macintosh", so touch tells them apart.
 var ua = navigator.userAgent;
-var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-var target = isIOS ? STORE.ios : /android/i.test(ua) ? (STORE.android || "/") : "/";
+var touchMac = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+var isIOS = /iPhone|iPad|iPod/.test(ua) || touchMac;
+var isMac = /Macintosh/.test(ua) && !touchMac;
+var target = isIOS ? STORE.ios : isMac ? STORE.mac : /android/i.test(ua) ? (STORE.android || "/") : "/";
 location.replace(target);
 </script>
 </head>

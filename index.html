@@ -105,6 +105,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M10.5 18.5h3"/></svg>
         <span><small data-i18n="iosSmall">For iPhone and iPad</small><b>App Store</b></span>
       </a>
+      <a class="store" id="mac" href="#" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="11" rx="2"/><path d="M2 19h20"/></svg>
+        <span><small data-i18n="macSmall">For Mac</small><b>Mac App Store</b></span>
+      </a>
       <a class="store" id="android" href="#" rel="noopener">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4.5v15l13-7.5z"/></svg>
         <span><small data-i18n="androidSmall">For Android</small><b>Google Play</b></span>
@@ -158,6 +162,7 @@
 // Mağaza bağlantıları; boş bırakılan düğme "Yakında" gösterir.
 const STORE = {
   ios: "https://apps.apple.com/app/id6823217926",
+  mac: "https://apps.apple.com/app/id6823217926?platform=mac",
   android: "https://play.google.com/store/apps/details?id=com.massio.converto"
 };
 
@@ -165,7 +170,7 @@ const T = {
   tr: {
     title: "Döviz çevirici ve hesap makinesi, tek uygulamada",
     lead: "Hesabınızı yapın, sonucu tek dokunuşla tüm para birimlerinde görün. Canlı kurlar, 150'den fazla para birimi.",
-    iosSmall: "iPhone ve iPad için", androidSmall: "Android için", soon: "Yakında",
+    iosSmall: "iPhone ve iPad için", macSmall: "Mac için", androidSmall: "Android için", soon: "Yakında",
     note: "Ücretsiz indirin · Premium isteğe bağlı",
     featuresTitle: "Neler yapabilirsiniz?",
     f1t: "Döviz çevirici", f1p: "Herhangi bir satıra yazın, listedeki tüm para birimleri anında hesaplansın. Kurlar her dakika yenilenir, internetsiz de çalışır.",
@@ -183,7 +188,7 @@ const T = {
   en: {
     title: "Currency converter and calculator, in one app",
     lead: "Do the math, then see the result in every currency with one tap. Live rates, 150+ currencies.",
-    iosSmall: "For iPhone and iPad", androidSmall: "For Android", soon: "Coming soon",
+    iosSmall: "For iPhone and iPad", macSmall: "For Mac", androidSmall: "For Android", soon: "Coming soon",
     note: "Free to download · Premium optional",
     featuresTitle: "What you can do",
     f1t: "Currency converter", f1p: "Type in any row and every currency in your list updates instantly. Rates refresh every minute and work offline too.",
@@ -201,7 +206,7 @@ const T = {
   de: {
     title: "Währungsrechner und Taschenrechner in einer App",
     lead: "Rechnen und das Ergebnis mit einem Tippen in allen Währungen sehen. Live-Kurse, über 150 Währungen.",
-    iosSmall: "Für iPhone und iPad", androidSmall: "Für Android", soon: "Demnächst",
+    iosSmall: "Für iPhone und iPad", macSmall: "Für Mac", androidSmall: "Für Android", soon: "Demnächst",
     note: "Kostenlos laden · Premium optional",
     featuresTitle: "Das kann die App",
     f1t: "Währungsrechner", f1p: "In eine beliebige Zeile tippen – alle Währungen der Liste werden sofort umgerechnet. Kurse jede Minute aktuell, auch offline.",
@@ -219,7 +224,7 @@ const T = {
   fr: {
     title: "Convertisseur de devises et calculatrice, dans une seule app",
     lead: "Faites le calcul, puis voyez le résultat dans toutes les devises d’un seul geste. Taux en direct, plus de 150 devises.",
-    iosSmall: "Pour iPhone et iPad", androidSmall: "Pour Android", soon: "Bientôt",
+    iosSmall: "Pour iPhone et iPad", macSmall: "Pour Mac", androidSmall: "Pour Android", soon: "Bientôt",
     note: "Téléchargement gratuit · Premium en option",
     featuresTitle: "Ce que vous pouvez faire",
     f1t: "Convertisseur de devises", f1p: "Saisissez un montant sur n’importe quelle ligne : toutes les devises se mettent à jour. Taux actualisés chaque minute, même hors ligne.",
@@ -254,12 +259,16 @@ function apply(lang) {
 }
 
 // Bağlantılar ve ziyaretçinin cihazına göre öne çıkan düğme.
-const ios = document.getElementById("ios"), android = document.getElementById("android");
+const ios = document.getElementById("ios"), mac = document.getElementById("mac"), android = document.getElementById("android");
 ios.href = STORE.ios;
+mac.href = STORE.mac;
 if (STORE.android) android.href = STORE.android; else { android.removeAttribute("href"); android.setAttribute("aria-disabled", "true"); }
 const ua = navigator.userAgent;
 const isAndroid = /android/i.test(ua);
+// iPadOS also reports "Macintosh"; only a real Mac has no touch screen.
+const isMac = /Macintosh/.test(ua) && navigator.maxTouchPoints <= 1;
 if (isAndroid && STORE.android) { android.classList.add("primary"); document.getElementById("stores").prepend(android); }
+else if (isMac) { mac.classList.add("primary"); document.getElementById("stores").prepend(mac); }
 else ios.classList.add("primary");
 
 let lang = pickLang();
